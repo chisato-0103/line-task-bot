@@ -44,3 +44,37 @@ export async function sendTaskConfirmation(
 
   await replyMessage(replyToken, message);
 }
+
+export async function sendTomorrowReminder(
+  userId: string,
+  tasks: Array<{ title: string; deadline: string }>
+) {
+  if (tasks.length === 0) return;
+
+  const taskList = tasks
+    .map((task) => `• ${task.title} (${task.deadline})`)
+    .join("\n");
+
+  const message: TextMessage = {
+    type: "text",
+    text: `⏰ 明日締切の課題があります\n\n${taskList}`,
+  };
+
+  await pushMessage(userId, message);
+}
+
+export async function sendTodayReminder(
+  userId: string,
+  tasks: Array<{ title: string }>
+) {
+  if (tasks.length === 0) return;
+
+  const taskList = tasks.map((task) => `• ${task.title}`).join("\n");
+
+  const message: TextMessage = {
+    type: "text",
+    text: `🚨 本日締切の課題があります！急いで！\n\n${taskList}`,
+  };
+
+  await pushMessage(userId, message);
+}
