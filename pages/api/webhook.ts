@@ -37,7 +37,7 @@ export default async function handler(
       return res.status(401).json({ error: "Unauthorized" });
     }
 
-    const body = JSON.parse(rawBody);
+    const body = JSON.parse(rawBody.toString());
     const { events } = body;
 
     if (!events) return res.status(400).json({ error: "Invalid request body" });
