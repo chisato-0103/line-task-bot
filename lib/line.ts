@@ -1,11 +1,13 @@
-import { middleware, Client } from '@line/bot-sdk';
-import { NextApiRequest, NextApiResponse } from 'next';
+import { middleware, Client, Message, TextMessage } from "@line/bot-sdk";
+import { NextApiRequest, NextApiResponse } from "next";
 
-const channelAccessToken = process.env.LINE_CHANNEL_ACCESS_TOKEN || '';
-const channelSecret = process.env.LINE_CHANNEL_SECRET || '';
+const channelAccessToken = process.env.LINE_CHANNEL_ACCESS_TOKEN || "";
+const channelSecret = process.env.LINE_CHANNEL_SECRET || "";
 
 if (!channelAccessToken || !channelSecret) {
-  throw new Error('Missing LINE_CHANNEL_ACCESS_TOKEN or LINE_CHANNEL_SECRET environment variables');
+  throw new Error(
+    "Missing LINE_CHANNEL_ACCESS_TOKEN or LINE_CHANNEL_SECRET environment variables"
+  );
 }
 
 export const client = new Client({
@@ -24,16 +26,13 @@ export const lineMiddleware = middleware({
  */
 export async function replyMessage(
   replyToken: string,
-  messages: Array<{
-    type: string;
-    text?: string;
-  }>
+  messages: Message | Message[]
 ) {
   try {
     await client.replyMessage(replyToken, messages);
-    console.log('Reply message sent successfully');
+    console.log("Reply message sent successfully");
   } catch (error) {
-    console.error('Error sending reply message:', error);
+    console.error("Error sending reply message:", error);
     throw error;
   }
 }
@@ -46,16 +45,13 @@ export async function replyMessage(
  */
 export async function pushMessage(
   userId: string,
-  messages: Array<{
-    type: string;
-    text?: string;
-  }>
+  messages: Message | Message[]
 ) {
   try {
     await client.pushMessage(userId, messages);
-    console.log('Push message sent successfully to user:', userId);
+    console.log("Push message sent successfully to user:", userId);
   } catch (error) {
-    console.error('Error sending push message:', error);
+    console.error("Error sending push message:", error);
     throw error;
   }
 }
@@ -68,11 +64,11 @@ export async function pushMessage(
  * @returns true if signature is valid
  */
 export function verifySignature(body: string, signature: string): boolean {
-  const crypto = require('crypto');
+  const crypto = require("crypto");
   const hash = crypto
-    .createHmac('sha256', channelSecret)
+    .createHmac("sha256", channelSecret)
     .update(body)
-    .digest('base64');
+    .digest("base64");
 
   return hash === signature;
 }
@@ -81,17 +77,20 @@ export function verifySignature(body: string, signature: string): boolean {
  * Validate LINE webhook request
  * Middleware for validating webhook requests
  */
-export function validateLineWebhook(req: NextApiRequest, res: NextApiResponse): boolean {
-  const signature = req.headers['x-line-signature'] as string;
+export function validateLineWebhook(
+  req: NextApiRequest,
+  res: NextApiResponse
+): boolean {
+  const signature = req.headers["x-line-signature"] as string;
   const body = (req as any).rawBody as string;
 
   if (!signature || !body) {
-    console.error('Missing signature or body');
+    console.error("Missing signature or body");
     return false;
   }
 
   if (!verifySignature(body, signature)) {
-    console.error('Invalid signature');
+    console.error("Invalid signature");
     return false;
   }
 
@@ -110,12 +109,12 @@ export async function sendTaskConfirmation(
   title: string,
   deadline: string
 ) {
-  const message = {
-    type: 'text',
+  const message: TextMessage = {
+    type: "text",
     text: `📝 登録したよ！\n\nタイトル：${title}\n締切：${deadline}`,
   };
 
-  await replyMessage(replyToken, [message]);
+  await replyMessage(replyToken, message);
 }
 
 /**
@@ -133,14 +132,16 @@ export async function sendTomorrowReminder(
 ) {
   if (tasks.length === 0) return;
 
-  const taskList = tasks.map((task) => `• ${task.title} (${task.deadline})`).join('\n');
+  const taskList = tasks
+    .map((task) => `• ${task.title} (${task.deadline})`)
+    .join("\n");
 
-  const message = {
-    type: 'text',
+  const message: TextMessage = {
+    type: "text",
     text: `⏰ 明日締切の課題があります\n\n${taskList}`,
   };
 
-  await pushMessage(userId, [message]);
+  await pushMessage(userId, message);
 }
 
 /**
@@ -158,12 +159,12 @@ export async function sendTodayReminder(
 ) {
   if (tasks.length === 0) return;
 
-  const taskList = tasks.map((task) => `• ${task.title}`).join('\n');
+  const taskList = tasks.map((task) => `• ${task.title}`).join("\n");
 
-  const message = {
-    type: 'text',
+  const message: TextMessage = {
+    type: "text",
     text: `🚨 本日締切の課題があります！急いで！\n\n${taskList}`,
   };
 
-  await pushMessage(userId, [message]);
+  await pushMessage(userId, message);
 }
