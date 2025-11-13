@@ -1,15 +1,15 @@
-import { Client, Message, TextMessage } from "@line/bot-sdk";
 import crypto from "crypto";
+import { Client, Message, TextMessage } from "@line/bot-sdk";
 
-const channelAccessToken = process.env.LINE_CHANNEL_ACCESS_TOKEN!;
-const channelSecret = process.env.LINE_CHANNEL_SECRET!;
+const channelAccessToken = process.env.LINE_CHANNEL_ACCESS_TOKEN || "";
+const channelSecret = process.env.LINE_CHANNEL_SECRET || "";
 
 export const client = new Client({
   channelAccessToken,
 });
 
-// 署名検証はこの1つだけ！
-export function validateLineWebhook(rawBody: string, signature: string) {
+// Buffer を受け取る！
+export function validateLineWebhook(rawBody: Buffer, signature: string) {
   const hash = crypto
     .createHmac("sha256", channelSecret)
     .update(rawBody)
