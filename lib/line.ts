@@ -1,5 +1,6 @@
 import { middleware, Client, Message, TextMessage } from "@line/bot-sdk";
 import { NextApiRequest } from "next";
+import crypto from "crypto";
 
 const channelAccessToken = process.env.LINE_CHANNEL_ACCESS_TOKEN || "";
 const channelSecret = process.env.LINE_CHANNEL_SECRET || "";
@@ -77,21 +78,14 @@ export function verifySignature(body: string, signature: string): boolean {
  * Validate LINE webhook request
  * Middleware for validating webhook requests
  */
-export function validateLineWebhook(req: NextApiRequest): boolean {
-  const signature = req.headers["x-line-signature"] as string;
-  const body = (req as any).rawBody as string;
+export function validateLineWebhook(rawBody: Buffer, signature: string) {
+  const channelSecret = process.env.LINE_CHANNEL_SECRET!;
+  const hash = crypto
+    .createHmac("sha256", channelSecret)
+    .update(rawBody) // ← ここが Buffer のまま！
+    .digest("base64");
 
-  if (!signature || !body) {
-    console.error("Missing signature or body");
-    return false;
-  }
-
-  if (!verifySignature(body, signature)) {
-    console.error("Invalid signature");
-    return false;
-  }
-
-  return true;
+  return hash === signature;
 }
 
 /**
