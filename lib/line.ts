@@ -1,5 +1,5 @@
 import { middleware, Client, Message, TextMessage } from "@line/bot-sdk";
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextApiRequest } from "next";
 
 const channelAccessToken = process.env.LINE_CHANNEL_ACCESS_TOKEN || "";
 const channelSecret = process.env.LINE_CHANNEL_SECRET || "";
