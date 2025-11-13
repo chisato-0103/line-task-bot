@@ -78,11 +78,11 @@ export function verifySignature(body: string, signature: string): boolean {
  * Validate LINE webhook request
  * Middleware for validating webhook requests
  */
-export function validateLineWebhook(rawBody: Buffer, signature: string) {
+export function validateLineWebhook(rawBody: string, signature: string) {
   const channelSecret = process.env.LINE_CHANNEL_SECRET!;
   const hash = crypto
     .createHmac("sha256", channelSecret)
-    .update(rawBody) // ← ここが Buffer のまま！
+    .update(rawBody)
     .digest("base64");
 
   return hash === signature;

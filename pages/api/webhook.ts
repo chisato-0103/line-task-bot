@@ -31,7 +31,6 @@ export default async function handler(
     const rawBody = await getRawBody(req);
     const signature = req.headers["x-line-signature"] as string;
 
-    // ★ 重要：rawBody と signature を渡す！
     if (!validateLineWebhook(rawBody.toString(), signature)) {
       console.warn("Invalid LINE webhook signature");
       return res.status(401).json({ error: "Unauthorized" });
