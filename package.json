@@ -1,0 +1,25 @@
+{
+  "name": "assignment-line-bot",
+  "version": "1.0.0",
+  "description": "University Student Assignment Management LINE Bot",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@line/bot-sdk": "latest",
+    "@supabase/supabase-js": "latest",
+    "chrono-node": "latest",
+    "date-fns": "latest",
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "typescript": "latest"
+  }
+}
