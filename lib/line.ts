@@ -77,10 +77,7 @@ export function verifySignature(body: string, signature: string): boolean {
  * Validate LINE webhook request
  * Middleware for validating webhook requests
  */
-export function validateLineWebhook(
-  req: NextApiRequest,
-  res: NextApiResponse
-): boolean {
+export function validateLineWebhook(req: NextApiRequest): boolean {
   const signature = req.headers["x-line-signature"] as string;
   const body = (req as any).rawBody as string;
 
