@@ -34,7 +34,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     (req as any).rawBody = rawBody;
 
     // Validate webhook signature
-    if (!validateLineWebhook(req, res)) {
+    if (!validateLineWebhook(req)) {
       console.warn('Invalid LINE webhook signature');
       return res.status(401).json({ error: 'Unauthorized' });
     }
